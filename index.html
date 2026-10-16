@@ -2,46 +2,97 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>The Path</title>
     <link rel="stylesheet" href="styles.css">
 </head>
+<body>
 <h1>The Path</h1>
 <h2>Lorde</h2>
-<img src="Lorde.png" alt="Lorde" width="300" height="300" type="image/png">
-<body>
+<img id="album-art" src="Lorde.png" alt="Lorde" width="300" height="300">
 
-<p>
-Born in the year of OxyContin
-Raised in the tall grass
-Teen millionaire having nightmares from the camera flash
-Now I'm alone on a windswept island
-Caught in the complex divorce of the seasons
-Won't take the call if it's the label or the radio
-</p>
+<audio id="music-player" controls preload="metadata" aria-label="Play The Path by Lorde">
+    <source src="Lorde%20-%20The%20Path.mp3" type="audio/mpeg">
+    Your browser does not support audio playback.
+</audio>
 
-<p>
-Arm in a cast at the museum gala
-Fork in my purse to take home to my mother
-Supermodels all dancing 'round a pharaoh's tomb
-</p>
+<section class="lyrics" aria-label="Lyrics">
+    <div class="lyrics-viewport" id="lyrics-viewport">
+        <div class="lyrics-track">
+            <p class="lyric-line">Born in the year of OxyContin</p>
+            <p class="lyric-line">Raised in the tall grass</p>
+            <p class="lyric-line">Teen millionaire having nightmares from the camera flash</p>
+            <p class="lyric-line">Now I'm alone on a windswept island</p>
+            <p class="lyric-line">Caught in the complex divorce of the seasons</p>
+            <p class="lyric-line">Won't take the call if it's the label or the radio</p>
+            <p class="lyric-line">Arm in a cast at the museum gala</p>
+            <p class="lyric-line">Fork in my purse to take home to my mother</p>
+            <p class="lyric-line">Supermodels all dancing 'round a pharaoh's tomb</p>
+            <p class="lyric-line">Now if you're looking for a saviour, well, that's not me</p>
+            <p class="lyric-line">You need someone to take your pain for you?</p>
+            <p class="lyric-line">Well, that's not me</p>
+            <p class="lyric-line">'Cause we are all broken and sad</p>
+            <p class="lyric-line">Where arе the dreams that we had?</p>
+            <p class="lyric-line">Can't find thе dreams that we had</p>
+            <p class="lyric-line">Ah-ah-ah, ah-ah-ah, ah-ah</p>
+            <p class="lyric-line">Let's hope the sun will show us the path, path</p>
+            <p class="lyric-line">Let's hope the sun will show us the path, path</p>
+            <p class="lyric-line">I just hope the sun will show us the path</p>
+            <p class="lyric-line">Saviour is not me</p>
+            <p class="lyric-line">I just hope the sun will show us the path</p>
+            <p class="lyric-line">Saviour is not me</p>
+            <p class="lyric-line">I just hope the sun will show us the path, path</p>
+            <p class="lyric-line">Path</p>
+        </div>
+    </div>
+</section>
 
-<p>
-Now if you're looking for a saviour, well, that's not me
-You need someone to take your pain for you?
-Well, that's not me
-'Cause we are all broken and sad
-Where arе the dreams that we had?
-Can't find thе dreams that we had
-Ah-ah-ah, ah-ah-ah, ah-ah
-Let's hope the sun will show us the path, path
-Let's hope the sun will show us the path, path
-I just hope the sun will show us the path
-Saviour is not me
-I just hope the sun will show us the path
-Saviour is not me
-I just hope the sun will show us the path, path
-Path
-</p>
+<script>
+    const player = document.querySelector("#music-player");
+    const albumArt = document.querySelector("#album-art");
+    const lyricsViewport = document.querySelector("#lyrics-viewport");
+    const lyricLines = document.querySelectorAll(".lyric-line");
+    const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+    let activeLyricIndex = -1;
 
+    function setPlaying(isPlaying) {
+        albumArt.classList.toggle("is-playing", isPlaying);
+    }
+
+    function updateLyrics() {
+        if (!Number.isFinite(player.duration) || player.duration <= 0) {
+            return;
+        }
+
+        const progress = Math.min(player.currentTime / player.duration, 1);
+        const nextIndex = Math.min(
+            Math.floor(progress * lyricLines.length),
+            lyricLines.length - 1
+        );
+
+        if (nextIndex === activeLyricIndex) {
+            return;
+        }
+
+        if (activeLyricIndex >= 0) {
+            lyricLines[activeLyricIndex].classList.remove("is-active");
+        }
+
+        const activeLine = lyricLines[nextIndex];
+        activeLine.classList.add("is-active");
+        lyricsViewport.scrollTo({
+            top: activeLine.offsetTop - (lyricsViewport.clientHeight - activeLine.clientHeight) / 2,
+            behavior: reduceMotion.matches ? "auto" : "smooth"
+        });
+        activeLyricIndex = nextIndex;
+    }
+
+    player.addEventListener("play", () => setPlaying(true));
+    player.addEventListener("pause", () => setPlaying(false));
+    player.addEventListener("ended", () => setPlaying(false));
+    player.addEventListener("loadedmetadata", updateLyrics);
+    player.addEventListener("timeupdate", updateLyrics);
+    player.addEventListener("seeked", updateLyrics);
+</script>
 </body>
 </html>
