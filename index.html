@@ -7,92 +7,818 @@
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
+<canvas id="lyric-vj" aria-hidden="true"></canvas>
 <h1>The Path</h1>
 <h2>Lorde</h2>
-<img id="album-art" src="Lorde.png" alt="Lorde" width="300" height="300">
+<div class="album-visualizer">
+    <canvas id="audio-visualizer" aria-hidden="true"></canvas>
+    <img id="album-art" src="Lorde.png" alt="Lorde" width="300" height="300">
+</div>
 
 <audio id="music-player" controls preload="metadata" aria-label="Play The Path by Lorde">
     <source src="Lorde%20-%20The%20Path.mp3" type="audio/mpeg">
     Your browser does not support audio playback.
 </audio>
 
-<section class="lyrics" aria-label="Lyrics">
+<section class="lyrics" aria-label="Lyrics. Select a line to jump to that part of the song.">
     <div class="lyrics-viewport" id="lyrics-viewport">
         <div class="lyrics-track">
-            <p class="lyric-line">Born in the year of OxyContin</p>
-            <p class="lyric-line">Raised in the tall grass</p>
-            <p class="lyric-line">Teen millionaire having nightmares from the camera flash</p>
-            <p class="lyric-line">Now I'm alone on a windswept island</p>
-            <p class="lyric-line">Caught in the complex divorce of the seasons</p>
-            <p class="lyric-line">Won't take the call if it's the label or the radio</p>
-            <p class="lyric-line">Arm in a cast at the museum gala</p>
-            <p class="lyric-line">Fork in my purse to take home to my mother</p>
-            <p class="lyric-line">Supermodels all dancing 'round a pharaoh's tomb</p>
-            <p class="lyric-line">Now if you're looking for a saviour, well, that's not me</p>
-            <p class="lyric-line">You need someone to take your pain for you?</p>
-            <p class="lyric-line">Well, that's not me</p>
-            <p class="lyric-line">'Cause we are all broken and sad</p>
-            <p class="lyric-line">Where arе the dreams that we had?</p>
-            <p class="lyric-line">Can't find thе dreams that we had</p>
-            <p class="lyric-line">Ah-ah-ah, ah-ah-ah, ah-ah</p>
-            <p class="lyric-line">Let's hope the sun will show us the path, path</p>
-            <p class="lyric-line">Let's hope the sun will show us the path, path</p>
-            <p class="lyric-line">I just hope the sun will show us the path</p>
-            <p class="lyric-line">Saviour is not me</p>
-            <p class="lyric-line">I just hope the sun will show us the path</p>
-            <p class="lyric-line">Saviour is not me</p>
-            <p class="lyric-line">I just hope the sun will show us the path, path</p>
-            <p class="lyric-line">Path</p>
+            <button class="lyric-line" type="button" data-time="21.47">Born in the year of OxyContin</button>
+            <button class="lyric-line" type="button" data-time="25.82">Raised in the tall grass</button>
+            <button class="lyric-line" type="button" data-time="31.73">Teen millionaire having nightmares from the camera flash</button>
+            <button class="lyric-line" type="button" data-time="42.22">Now I'm alone on a windswept island</button>
+            <button class="lyric-line" type="button" data-time="46.51">Caught in the complex divorce of the seasons</button>
+            <button class="lyric-line" type="button" data-time="52.49">Won't take the call if it's the label or the radio</button>
+            <button class="lyric-line" type="button" data-time="84.01">Arm in a cast at the museum gala</button>
+            <button class="lyric-line" type="button" data-time="88.43">Fork in my purse to take home to my mother</button>
+            <button class="lyric-line" type="button" data-time="94.47">Supermodels all dancing 'round a pharaoh's tomb</button>
+            <button class="lyric-line" type="button" data-time="102.25">Now if you're looking for a saviour, well, that's not me</button>
+            <button class="lyric-line" type="button" data-time="112.62">You need someone to take your pain for you?</button>
+            <button class="lyric-line" type="button" data-time="118.62">Well, that's not me</button>
+            <button class="lyric-line" type="button" data-time="124.48">'Cause we are all broken and sad</button>
+            <button class="lyric-line" type="button" data-time="128.39">Where arе the dreams that we had?</button>
+            <button class="lyric-line" type="button" data-time="130.80">Can't find thе dreams that we had</button>
+            <button class="lyric-line" type="button" data-time="135.13">Ah-ah-ah, ah-ah-ah, ah-ah</button>
+            <button class="lyric-line" type="button" data-time="143.37">Let's hope the sun will show us the path, path</button>
+            <button class="lyric-line" type="button" data-time="154.06">Let's hope the sun will show us the path, path</button>
+            <button class="lyric-line" type="button" data-time="164.19">I just hope the sun will show us the path</button>
+            <button class="lyric-line" type="button" data-time="167.82">Saviour is not me</button>
+            <button class="lyric-line" type="button" data-time="174.58">I just hope the sun will show us the path</button>
+            <button class="lyric-line" type="button" data-time="178.28">Saviour is not me</button>
+            <button class="lyric-line" type="button" data-time="184.96">I just hope the sun will show us the path, path</button>
+            <button class="lyric-line" type="button" data-time="198.63">Path</button>
         </div>
     </div>
 </section>
 
+<footer class="site-note">
+    Created entirely through vibe coding for learning and testing purposes.
+</footer>
+
 <script>
     const player = document.querySelector("#music-player");
     const albumArt = document.querySelector("#album-art");
+    const lyricVj = document.querySelector("#lyric-vj");
+    const lyricVjContext = lyricVj.getContext("2d");
+    const previousVjFrame = document.createElement("canvas");
+    const previousVjContext = previousVjFrame.getContext("2d");
+    const visualizer = document.querySelector("#audio-visualizer");
+    const visualizerContext = visualizer.getContext("2d");
     const lyricsViewport = document.querySelector("#lyrics-viewport");
     const lyricLines = document.querySelectorAll(".lyric-line");
     const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
     let activeLyricIndex = -1;
+    let audioContext;
+    let analyser;
+    let frequencyData = new Uint8Array(128);
+    let animationFrame;
+    let vjTransitionStarted = 0;
+    let smoothedVjEnergy = 0;
 
-    function setPlaying(isPlaying) {
-        albumArt.classList.toggle("is-playing", isPlaying);
+    function resizeVisualizer() {
+        const pixelRatio = window.devicePixelRatio || 1;
+        const vjWidth = window.innerWidth;
+        const vjHeight = window.innerHeight;
+        lyricVj.width = Math.round(vjWidth * pixelRatio);
+        lyricVj.height = Math.round(vjHeight * pixelRatio);
+        lyricVjContext.setTransform(pixelRatio, 0, 0, pixelRatio, 0, 0);
+        previousVjFrame.width = lyricVj.width;
+        previousVjFrame.height = lyricVj.height;
+
+        const bounds = visualizer.getBoundingClientRect();
+        visualizer.width = Math.round(bounds.width * pixelRatio);
+        visualizer.height = Math.round(bounds.height * pixelRatio);
+        visualizerContext.setTransform(pixelRatio, 0, 0, pixelRatio, 0, 0);
     }
 
-    function updateLyrics() {
-        if (!Number.isFinite(player.duration) || player.duration <= 0) {
+    function drawJourneyRoad(ctx, width, height, time, energy, palette) {
+        const horizon = height * 0.36;
+        const travel = (time * 0.2) % 1;
+        const bend = Math.sin(time * 0.11) * width * 0.035;
+        const centerAt = (depth) => width * 0.5
+            + bend * depth
+            + Math.sin(depth * 2 + time * 0.07) * width * 0.025 * depth;
+        const roadHalfWidth = (depth) => width * (0.014 + depth * 0.32);
+        const roadPoint = (depth, side) => ({
+            x: centerAt(depth) + side * roadHalfWidth(depth),
+            y: horizon + (height - horizon) * depth
+        });
+
+        ctx.save();
+        ctx.beginPath();
+        for (let step = 0; step <= 24; step += 1) {
+            const point = roadPoint(step / 24, -1);
+            if (step === 0) {
+                ctx.moveTo(point.x, point.y);
+            } else {
+                ctx.lineTo(point.x, point.y);
+            }
+        }
+        for (let step = 24; step >= 0; step -= 1) {
+            const point = roadPoint(step / 24, 1);
+            ctx.lineTo(point.x, point.y);
+        }
+        ctx.closePath();
+        const roadPaint = ctx.createLinearGradient(0, horizon, 0, height);
+        roadPaint.addColorStop(0, `rgba(${palette[0]}, 0.12)`);
+        roadPaint.addColorStop(0.35, "rgba(91, 77, 117, 0.48)");
+        roadPaint.addColorStop(1, "rgba(47, 41, 71, 0.76)");
+        ctx.fillStyle = roadPaint;
+        ctx.fill();
+
+        ctx.lineCap = "round";
+        for (const side of [-1, 1]) {
+            ctx.beginPath();
+            for (let step = 0; step <= 24; step += 1) {
+                const point = roadPoint(step / 24, side);
+                if (step === 0) {
+                    ctx.moveTo(point.x, point.y);
+                } else {
+                    ctx.lineTo(point.x, point.y);
+                }
+            }
+            ctx.strokeStyle = `rgba(${palette[1]}, ${0.52 + energy * 0.12})`;
+            ctx.lineWidth = 6;
+            ctx.shadowColor = `rgba(${palette[1]}, 0.46)`;
+            ctx.shadowBlur = 14;
+            ctx.stroke();
+            ctx.strokeStyle = "rgba(255, 246, 222, 0.56)";
+            ctx.lineWidth = 1.5;
+            ctx.stroke();
+        }
+
+        ctx.shadowBlur = 0;
+        for (let marker = 0; marker < 9; marker += 1) {
+            const depth = (marker / 9 + travel) % 1;
+            const point = roadPoint(depth, 0);
+            const dashLength = 3 + depth * height * 0.075;
+            const dashWidth = 1.5 + depth * width * 0.012;
+            ctx.beginPath();
+            ctx.ellipse(point.x, point.y, dashWidth, dashLength / 2, 0, 0, Math.PI * 2);
+            ctx.fillStyle = `rgba(255, 239, 198, ${0.22 + depth * 0.58})`;
+            ctx.shadowColor = `rgba(${palette[1]}, 0.7)`;
+            ctx.shadowBlur = 3 + depth * 10;
+            ctx.fill();
+        }
+        ctx.shadowBlur = 0;
+
+        for (let marker = 0; marker < 16; marker += 1) {
+            const depth = (marker / 16 + travel * 0.62) % 1;
+            const side = marker % 2 === 0 ? -1 : 1;
+            const x = centerAt(depth) + side * (roadHalfWidth(depth) + width * (0.035 + depth * 0.11));
+            const y = horizon + (height - horizon) * depth;
+            const scale = 0.16 + depth * 1.7;
+            const bob = Math.sin(time * 0.72 + marker * 1.4) * (2 + depth * 9);
+            const flowerRadius = 3 + scale * 3.5;
+
+            ctx.save();
+            ctx.translate(x, y + bob);
+            ctx.scale(scale, scale);
+            ctx.fillStyle = marker % 3 === 0 ? "rgba(255, 190, 189, 0.8)" : `rgba(${palette[1]}, 0.82)`;
+            for (let petal = 0; petal < 5; petal += 1) {
+                const angle = petal / 5 * Math.PI * 2 + time * 0.22;
+                ctx.beginPath();
+                ctx.ellipse(
+                    Math.cos(angle) * flowerRadius * 0.72,
+                    Math.sin(angle) * flowerRadius * 0.72,
+                    flowerRadius * 0.48,
+                    flowerRadius * 0.3,
+                    angle,
+                    0,
+                    Math.PI * 2
+                );
+                ctx.fill();
+            }
+            ctx.beginPath();
+            ctx.arc(0, 0, flowerRadius * 0.27, 0, Math.PI * 2);
+            ctx.fillStyle = "rgba(255, 239, 160, 0.95)";
+            ctx.fill();
+            ctx.restore();
+        }
+
+        const encounter = activeLyricIndex < 2 ? "grass"
+            : activeLyricIndex === 2 ? "flash"
+                : activeLyricIndex <= 4 ? "island"
+                    : activeLyricIndex === 5 ? "radio"
+                        : activeLyricIndex === 6 ? "museum"
+                            : activeLyricIndex === 7 ? "basket"
+                                : activeLyricIndex === 8 ? "pyramid"
+                                    : activeLyricIndex <= 11 ? "rain"
+                                        : activeLyricIndex <= 15 ? "dream"
+                                            : "sun";
+        const encounterColor = encounter === "flash" || encounter === "sun"
+            ? "255, 218, 142"
+            : encounter === "island" || encounter === "grass"
+                ? "144, 203, 164"
+                : encounter === "dream"
+                    ? "222, 172, 238"
+                    : "255, 190, 189";
+
+        for (let sign = 0; sign < 2; sign += 1) {
+            const depth = (sign * 0.52 + travel * 0.46 + 0.08) % 1;
+            const side = sign === 0 ? -1 : 1;
+            const scale = 0.35 + depth * 0.9;
+            const groundY = horizon + (height - horizon) * depth;
+            const signX = centerAt(depth) + side * (
+                roadHalfWidth(depth) + width * (0.055 + depth * 0.055)
+            );
+            const boardSize = 29 * scale;
+            const boardY = groundY - 47 * scale;
+            const bob = Math.sin(time * 0.55 + sign * 2) * (2 + depth * 5);
+
+            ctx.save();
+            ctx.translate(signX, boardY + bob);
+            ctx.scale(scale, scale);
+            ctx.strokeStyle = "rgba(255, 234, 196, 0.8)";
+            ctx.lineWidth = 4;
+            ctx.beginPath();
+            ctx.moveTo(0, 16);
+            ctx.lineTo(0, 55);
+            ctx.stroke();
+            ctx.beginPath();
+            ctx.roundRect(-22, -20, 44, 38, 11);
+            ctx.fillStyle = "rgba(92, 75, 109, 0.86)";
+            ctx.shadowColor = `rgba(${encounterColor}, 0.42)`;
+            ctx.shadowBlur = 12;
+            ctx.fill();
+            ctx.shadowBlur = 0;
+            ctx.strokeStyle = `rgba(${encounterColor}, 0.88)`;
+            ctx.lineWidth = 2.5;
+            ctx.stroke();
+            ctx.strokeStyle = `rgba(${encounterColor}, 0.95)`;
+            ctx.fillStyle = `rgba(${encounterColor}, 0.88)`;
+            ctx.lineWidth = 2.8;
+            ctx.lineCap = "round";
+            ctx.lineJoin = "round";
+            ctx.beginPath();
+
+            if (encounter === "grass") {
+                ctx.moveTo(-11, 9);
+                ctx.quadraticCurveTo(-12, -1, -16, -7);
+                ctx.moveTo(-2, 9);
+                ctx.quadraticCurveTo(1, -5, -1, -12);
+                ctx.moveTo(7, 9);
+                ctx.quadraticCurveTo(14, 0, 15, -8);
+                ctx.stroke();
+                ctx.beginPath();
+                ctx.arc(10, -8, 4, 0, Math.PI * 2);
+                ctx.fill();
+            } else if (encounter === "flash") {
+                ctx.moveTo(0, -14);
+                ctx.lineTo(3, -5);
+                ctx.lineTo(12, -3);
+                ctx.lineTo(4, 2);
+                ctx.lineTo(6, 12);
+                ctx.lineTo(-1, 5);
+                ctx.lineTo(-10, 10);
+                ctx.lineTo(-6, 1);
+                ctx.lineTo(-13, -5);
+                ctx.lineTo(-4, -6);
+                ctx.closePath();
+                ctx.fill();
+            } else if (encounter === "island") {
+                ctx.moveTo(-15, 8);
+                ctx.quadraticCurveTo(0, 2, 15, 8);
+                ctx.moveTo(0, 7);
+                ctx.lineTo(2, -11);
+                ctx.moveTo(2, -9);
+                ctx.quadraticCurveTo(7, -15, 12, -12);
+                ctx.moveTo(2, -8);
+                ctx.quadraticCurveTo(-5, -14, -9, -12);
+                ctx.stroke();
+            } else if (encounter === "radio") {
+                ctx.moveTo(-13, 5);
+                ctx.quadraticCurveTo(-16, 0, -12, -4);
+                ctx.lineTo(-7, -8);
+                ctx.quadraticCurveTo(-4, -10, -2, -6);
+                ctx.lineTo(1, -1);
+                ctx.quadraticCurveTo(3, 2, 0, 5);
+                ctx.quadraticCurveTo(6, 13, 12, 7);
+                ctx.lineTo(15, 4);
+                ctx.quadraticCurveTo(18, 1, 15, -2);
+                ctx.lineTo(10, -6);
+                ctx.stroke();
+            } else if (encounter === "museum") {
+                for (const columnX of [-10, 0, 10]) {
+                    ctx.moveTo(columnX, -4);
+                    ctx.lineTo(columnX, 10);
+                }
+                ctx.moveTo(-15, -7);
+                ctx.lineTo(0, -14);
+                ctx.lineTo(15, -7);
+                ctx.moveTo(-15, 12);
+                ctx.lineTo(15, 12);
+                ctx.stroke();
+            } else if (encounter === "basket") {
+                ctx.moveTo(-13, -3);
+                ctx.lineTo(13, -3);
+                ctx.lineTo(10, 10);
+                ctx.lineTo(-10, 10);
+                ctx.closePath();
+                ctx.moveTo(-7, -4);
+                ctx.quadraticCurveTo(0, -16, 7, -4);
+                ctx.stroke();
+            } else if (encounter === "pyramid") {
+                ctx.moveTo(-14, 10);
+                ctx.lineTo(0, -13);
+                ctx.lineTo(14, 10);
+                ctx.closePath();
+                ctx.moveTo(0, -13);
+                ctx.lineTo(2, 10);
+                ctx.stroke();
+            } else if (encounter === "rain") {
+                ctx.arc(-3, -5, 8, Math.PI, 0);
+                ctx.arc(5, -5, 6, Math.PI, 0);
+                ctx.moveTo(-7, -5);
+                ctx.lineTo(11, -5);
+                ctx.moveTo(-5, 0);
+                ctx.lineTo(-8, 7);
+                ctx.moveTo(4, 0);
+                ctx.lineTo(1, 7);
+                ctx.stroke();
+            } else if (encounter === "dream") {
+                ctx.moveTo(0, -14);
+                ctx.lineTo(4, -4);
+                ctx.lineTo(14, 0);
+                ctx.lineTo(4, 4);
+                ctx.lineTo(0, 14);
+                ctx.lineTo(-4, 4);
+                ctx.lineTo(-14, 0);
+                ctx.lineTo(-4, -4);
+                ctx.closePath();
+                ctx.fill();
+            } else {
+                ctx.arc(0, 0, 8, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.moveTo(0, -16);
+                ctx.lineTo(0, -12);
+                ctx.moveTo(0, 12);
+                ctx.lineTo(0, 16);
+                ctx.moveTo(-16, 0);
+                ctx.lineTo(-12, 0);
+                ctx.moveTo(12, 0);
+                ctx.lineTo(16, 0);
+                ctx.stroke();
+            }
+            ctx.restore();
+        }
+
+        ctx.restore();
+    }
+
+    function drawLyricVj() {
+        const width = window.innerWidth;
+        const height = window.innerHeight;
+        const time = performance.now() / 1000;
+        const rawEnergy = frequencyData.reduce((sum, value) => sum + value, 0)
+            / frequencyData.length / 255;
+        smoothedVjEnergy += (rawEnergy - smoothedVjEnergy) * 0.035;
+        const energy = smoothedVjEnergy;
+        const ctx = lyricVjContext;
+        const palette = activeLyricIndex >= 16
+            ? ["188, 151, 230", "255, 193, 219"]
+            : activeLyricIndex >= 12
+                ? ["188, 151, 230", "255, 193, 219"]
+                : activeLyricIndex === 8
+                    ? ["243, 151, 103", "255, 218, 143"]
+                    : activeLyricIndex === 6
+                        ? ["181, 162, 222", "255, 192, 171"]
+                        : activeLyricIndex === 2
+                            ? ["255, 197, 157", "255, 240, 178"]
+                            : ["129, 194, 165", "210, 220, 150"];
+
+        ctx.clearRect(0, 0, width, height);
+        for (const side of [0, 1]) {
+            const glowX = side === 0 ? 0 : width;
+            const glow = ctx.createRadialGradient(glowX, height * 0.52, 0, glowX, height * 0.52, width * 0.58);
+            glow.addColorStop(0, `rgba(${palette[0]}, ${0.2 + energy * 0.1})`);
+            glow.addColorStop(0.48, `rgba(${palette[0]}, ${0.1 + energy * 0.06})`);
+            glow.addColorStop(1, `rgba(${palette[0]}, 0)`);
+            ctx.fillStyle = glow;
+            ctx.fillRect(0, 0, width, height);
+        }
+
+        drawJourneyRoad(ctx, width, height, time, energy, palette);
+
+        if (activeLyricIndex === 1) {
+            for (let side = 0; side < 2; side += 1) {
+                for (let blade = 0; blade < 22; blade += 1) {
+                    const x = side === 0
+                        ? 12 + blade * width * 0.018
+                        : width - 12 - blade * width * 0.018;
+                    const sway = Math.sin(time * 0.75 + blade * 0.32 + side) * 42;
+                    ctx.beginPath();
+                    ctx.moveTo(x, height);
+                    ctx.quadraticCurveTo(x + sway * 0.4, height * 0.78, x + sway, height * (0.49 + (blade % 5) * 0.055));
+                    ctx.strokeStyle = `rgba(${palette[0]}, ${0.42 + energy * 0.3})`;
+                    ctx.lineWidth = blade % 4 === 0 ? 3 : 1.8;
+                    ctx.stroke();
+                }
+            }
+        } else if (activeLyricIndex === 2) {
+            const flash = 0.42 + (0.5 + Math.sin(time * 0.7)) * 0.2 + energy * 0.16;
+            for (const x of [width * 0.08, width * 0.92]) {
+                const glow = ctx.createRadialGradient(x, height * 0.28, 0, x, height * 0.28, width * 0.32);
+                glow.addColorStop(0, `rgba(${palette[1]}, ${flash})`);
+                glow.addColorStop(0.35, `rgba(${palette[1]}, ${flash * 0.34})`);
+                glow.addColorStop(1, `rgba(${palette[1]}, 0)`);
+                ctx.fillStyle = glow;
+                ctx.fillRect(0, 0, width, height * 0.65);
+            }
+        } else if ([3, 4].includes(activeLyricIndex)) {
+            const horizon = height * 0.72;
+            ctx.beginPath();
+            ctx.moveTo(0, horizon);
+            ctx.quadraticCurveTo(width * 0.18, horizon - height * 0.12 + Math.sin(time * 0.35) * 16, width * 0.36, horizon);
+            ctx.quadraticCurveTo(width * 0.46, horizon + height * 0.06 + Math.sin(time * 0.35 + 1) * 14, width * 0.55, horizon - height * 0.01);
+            ctx.lineTo(width, horizon + height * 0.08);
+            ctx.strokeStyle = `rgba(${palette[0]}, ${0.55 + energy * 0.3})`;
+            ctx.lineWidth = 4;
+            ctx.stroke();
+            for (let wave = 0; wave < 5; wave += 1) {
+                const y = horizon + 18 + wave * 28;
+                ctx.beginPath();
+                const waveMotion = Math.sin(time * 0.65 + wave * 0.55) * 24;
+                ctx.moveTo(0, y + waveMotion);
+                ctx.bezierCurveTo(width * 0.25, y - waveMotion, width * 0.7, y + waveMotion, width, y - waveMotion);
+                ctx.strokeStyle = `rgba(${palette[1]}, ${0.25 + energy * 0.2})`;
+                ctx.lineWidth = 2 + wave % 2;
+                ctx.stroke();
+            }
+            if (activeLyricIndex === 4) {
+                for (let leaf = 0; leaf < 28; leaf += 1) {
+                    const x = (leaf * 139.7 % 997) / 997 * width
+                        + Math.sin(time * 0.24 + leaf * 0.8) * 34;
+                    const y = (leaf * 241.3 % 991) / 991 * height
+                        + Math.sin(time * 0.38 + leaf * 1.3) * 38;
+                    ctx.save();
+                    ctx.translate(x, y);
+                    ctx.rotate(Math.sin(time * 0.42 + leaf) * 0.85 + leaf);
+                    ctx.beginPath();
+                    ctx.ellipse(0, 0, 2 + leaf % 3, 5 + leaf % 4, 0, 0, Math.PI * 2);
+                    ctx.fillStyle = `rgba(${palette[1]}, 0.7)`;
+                    ctx.fill();
+                    ctx.restore();
+                }
+            }
+        } else if (activeLyricIndex === 5) {
+            for (const x of [width * 0.08, width * 0.92]) {
+                for (let ring = 0; ring < 4; ring += 1) {
+                    ctx.beginPath();
+                    ctx.arc(x, height * 0.44, 12 + ring * 24 + Math.sin(time * 0.8 + ring * 0.5) * 10, -Math.PI * 0.42, Math.PI * 0.42);
+                    ctx.strokeStyle = `rgba(${palette[0]}, ${0.72 - ring * 0.1 + energy * 0.15})`;
+                    ctx.lineWidth = 4 - ring * 0.5;
+                    ctx.stroke();
+                }
+            }
+        } else if (activeLyricIndex === 6) {
+            for (let side = 0; side < 2; side += 1) {
+                const x = side === 0 ? width * 0.09 : width * 0.91;
+                for (let column = 0; column < 3; column += 1) {
+                    const columnX = x + (side === 0 ? 1 : -1) * column * 24
+                        + Math.sin(time * 0.3 + column * 0.5 + side) * 5;
+                    ctx.strokeStyle = `rgba(${palette[0]}, ${0.62 + energy * 0.25})`;
+                    ctx.lineWidth = 2;
+                    ctx.beginPath();
+                    ctx.moveTo(columnX, height * 0.24);
+                    ctx.lineTo(columnX, height * 0.84);
+                    ctx.moveTo(columnX - 7, height * 0.24);
+                    ctx.lineTo(columnX + 7, height * 0.24);
+                    ctx.moveTo(columnX - 7, height * 0.84);
+                    ctx.lineTo(columnX + 7, height * 0.84);
+                    ctx.stroke();
+                }
+            }
+        } else if (activeLyricIndex === 7) {
+            for (const x of [width * 0.12, width * 0.88]) {
+                const direction = x < width / 2 ? 1 : -1;
+                ctx.strokeStyle = `rgba(${palette[1]}, ${0.74 + energy * 0.2})`;
+                ctx.lineWidth = 4;
+                ctx.beginPath();
+                ctx.moveTo(x, height * 0.36);
+                ctx.lineTo(x, height * 0.64);
+                ctx.moveTo(x - 10 * direction, height * 0.36);
+                ctx.lineTo(x + 10 * direction, height * 0.36);
+                ctx.moveTo(x - 7 * direction, height * 0.43);
+                ctx.lineTo(x - 7 * direction, height * 0.58);
+                ctx.moveTo(x, height * 0.43);
+                ctx.lineTo(x, height * 0.58);
+                ctx.moveTo(x + 7 * direction, height * 0.43);
+                ctx.lineTo(x + 7 * direction, height * 0.58);
+                ctx.stroke();
+            }
+        } else if (activeLyricIndex === 8) {
+            for (const x of [width * 0.08, width * 0.92]) {
+                const size = Math.min(width * 0.18, height * 0.24)
+                    * (1 + Math.sin(time * 0.6 + x) * 0.08);
+                const pyramidY = height * 0.77 + Math.sin(time * 0.48 + x) * 10;
+                ctx.beginPath();
+                ctx.moveTo(x, pyramidY);
+                ctx.lineTo(x + (x < width / 2 ? size : -size), pyramidY);
+                ctx.lineTo(x, pyramidY - size * 0.82);
+                ctx.closePath();
+                ctx.fillStyle = `rgba(${palette[0]}, ${0.35 + energy * 0.2})`;
+                ctx.fill();
+                ctx.strokeStyle = `rgba(${palette[1]}, ${0.88})`;
+                ctx.lineWidth = 4;
+                ctx.stroke();
+            }
+        } else if (activeLyricIndex >= 9 && activeLyricIndex <= 11) {
+            for (let drop = 0; drop < 55; drop += 1) {
+                const x = (drop * 83.7 % 997) / 997 * width;
+                const progress = (drop * 0.173 + time * 0.19) % 1;
+                const y = progress * height;
+                const visibility = Math.sin(progress * Math.PI);
+                ctx.beginPath();
+                ctx.moveTo(x, y);
+                ctx.lineTo(x - 4, y + 20 + energy * 14);
+                ctx.strokeStyle = `rgba(${palette[1]}, ${visibility * 0.6})`;
+                ctx.lineWidth = 3;
+                ctx.stroke();
+            }
+        } else if (activeLyricIndex >= 12 && activeLyricIndex <= 15) {
+            for (let star = 0; star < 42; star += 1) {
+                const x = (star * 127.1 % 1000) / 1000 * width;
+                const y = (star * 311.7 % 1000) / 1000 * height;
+                if (Math.abs(x - width / 2) < width * 0.24 && y > height * 0.25 && y < height * 0.78) {
+                    continue;
+                }
+                const twinkle = 0.62 + 0.38 * Math.sin(time * (0.32 + star % 4 * 0.08) + star);
+                const driftX = Math.sin(time * 0.18 + star * 0.7) * 22;
+                const driftY = Math.cos(time * 0.16 + star * 0.55) * 18;
+                ctx.beginPath();
+                ctx.arc(x + driftX, y + driftY, 2 + energy * 3 + (star % 3) * 0.7, 0, Math.PI * 2);
+                ctx.fillStyle = `rgba(${palette[1]}, ${twinkle * 0.82})`;
+                ctx.fill();
+            }
+        } else if (activeLyricIndex >= 16) {
+            const sunX = width * (0.5 + Math.sin(time * 0.12) * 0.025);
+            const sunY = height * (0.22 + Math.sin(time * 0.3) * 0.035);
+            const sunRadius = Math.min(width, height) * (0.045 + energy * 0.012 + Math.sin(time * 0.42) * 0.004);
+            const sunGlow = ctx.createRadialGradient(sunX, sunY, sunRadius * 0.2, sunX, sunY, sunRadius * 5);
+            sunGlow.addColorStop(0, `rgba(${palette[1]}, ${0.65 + energy * 0.25})`);
+            sunGlow.addColorStop(0.32, `rgba(${palette[0]}, ${0.3 + energy * 0.18})`);
+            sunGlow.addColorStop(1, `rgba(${palette[0]}, 0)`);
+            ctx.fillStyle = sunGlow;
+            ctx.fillRect(sunX - sunRadius * 5, sunY - sunRadius * 5, sunRadius * 10, sunRadius * 10);
+            ctx.beginPath();
+            ctx.arc(sunX, sunY, sunRadius, 0, Math.PI * 2);
+            ctx.fillStyle = `rgba(${palette[1]}, 0.8)`;
+            ctx.fill();
+        } else if (activeLyricIndex === 0) {
+            for (let particle = 0; particle < 18; particle += 1) {
+                const x = (particle * 173.3 % 997) / 997 * width;
+                const y = (particle * 251.9 % 991) / 991 * height;
+                const drift = Math.sin(time * 0.35 + particle * 0.7) * 26;
+                const bob = Math.cos(time * 0.28 + particle) * 22;
+                ctx.beginPath();
+                ctx.arc(x + drift, y + bob, 2.5 + energy * 3, 0, Math.PI * 2);
+                ctx.fillStyle = `rgba(${palette[0]}, ${0.65 + energy * 0.25})`;
+                ctx.shadowColor = `rgba(${palette[1]}, 0.9)`;
+                ctx.shadowBlur = 12;
+                ctx.fill();
+            }
+        }
+
+        const floatingPetalColors = [palette[1], "255, 190, 189", "162, 211, 207"];
+        for (let petal = 0; petal < 18; petal += 1) {
+            const side = petal % 2 === 0 ? 0 : 1;
+            const baseX = side === 0
+                ? width * (0.035 + (Math.floor(petal / 2) % 3) * 0.055)
+                : width * (0.965 - (Math.floor(petal / 2) % 3) * 0.055);
+            const x = baseX + Math.sin(time * 0.2 + petal * 1.3) * 18;
+            const y = height * ((petal * 0.173 + time * 0.035) % 0.92 + 0.04);
+            const size = 3 + petal % 3 * 1.6;
+            const color = floatingPetalColors[petal % floatingPetalColors.length];
+
+            ctx.save();
+            ctx.translate(x, y);
+            ctx.rotate(Math.sin(time * 0.32 + petal) * 0.8 + time * 0.12);
+            ctx.fillStyle = `rgba(${color}, 0.72)`;
+            ctx.shadowColor = `rgba(${color}, 0.42)`;
+            ctx.shadowBlur = 7;
+            for (let lobe = 0; lobe < 4; lobe += 1) {
+                ctx.beginPath();
+                ctx.ellipse(
+                    Math.cos(lobe * Math.PI / 2) * size * 0.62,
+                    Math.sin(lobe * Math.PI / 2) * size * 0.62,
+                    size * 0.68,
+                    size * 0.42,
+                    lobe * Math.PI / 2,
+                    0,
+                    Math.PI * 2
+                );
+                ctx.fill();
+            }
+            ctx.shadowBlur = 0;
+            ctx.beginPath();
+            ctx.arc(0, 0, size * 0.28, 0, Math.PI * 2);
+            ctx.fillStyle = "rgba(255, 239, 160, 0.9)";
+            ctx.fill();
+            ctx.restore();
+        }
+
+        const transitionProgress = vjTransitionStarted
+            ? Math.min((performance.now() - vjTransitionStarted) / 1250, 1)
+            : 1;
+        if (transitionProgress < 1) {
+            ctx.save();
+            ctx.globalAlpha = 1 - transitionProgress;
+            ctx.drawImage(previousVjFrame, 0, 0, width, height);
+            ctx.restore();
+        } else {
+            vjTransitionStarted = 0;
+        }
+
+        ctx.shadowBlur = 0;
+    }
+
+    function beginVjTransition() {
+        if (reduceMotion.matches || activeLyricIndex < 0) {
             return;
         }
 
-        const progress = Math.min(player.currentTime / player.duration, 1);
-        const nextIndex = Math.min(
-            Math.floor(progress * lyricLines.length),
-            lyricLines.length - 1
-        );
+        previousVjContext.clearRect(0, 0, previousVjFrame.width, previousVjFrame.height);
+        previousVjContext.drawImage(lyricVj, 0, 0);
+        vjTransitionStarted = performance.now();
+    }
+
+    function drawVisualizer() {
+        const width = visualizer.clientWidth;
+        const height = visualizer.clientHeight;
+        const centerX = width / 2;
+        const centerY = height / 2;
+        const radius = Math.min(width, height) * 0.405;
+        const barCount = 96;
+
+        visualizerContext.clearRect(0, 0, width, height);
+        analyser.getByteFrequencyData(frequencyData);
+        visualizerContext.lineCap = "round";
+        visualizerContext.strokeStyle = "rgba(214, 166, 232, 0.86)";
+        visualizerContext.shadowColor = "rgba(214, 166, 232, 0.8)";
+        visualizerContext.shadowBlur = 12;
+
+        for (let index = 0; index < barCount; index += 1) {
+            const frequencyIndex = Math.floor(index / barCount * frequencyData.length * 0.72);
+            const amplitude = frequencyData[frequencyIndex] / 255;
+            const barLength = 3 + amplitude * Math.min(width * 0.12, 30);
+            const angle = index / barCount * Math.PI * 2 - Math.PI / 2;
+            const innerX = centerX + Math.cos(angle) * radius;
+            const innerY = centerY + Math.sin(angle) * radius;
+            const outerX = centerX + Math.cos(angle) * (radius + barLength);
+            const outerY = centerY + Math.sin(angle) * (radius + barLength);
+
+            visualizerContext.beginPath();
+            visualizerContext.moveTo(innerX, innerY);
+            visualizerContext.lineTo(outerX, outerY);
+            visualizerContext.lineWidth = index % 3 === 0 ? 2 : 1.5;
+            visualizerContext.stroke();
+        }
+
+        visualizerContext.shadowBlur = 0;
+    }
+
+    function renderVjFrame() {
+        if (analyser && !player.paused) {
+            drawVisualizer();
+        }
+        drawLyricVj();
+
+        if (!reduceMotion.matches) {
+            animationFrame = requestAnimationFrame(renderVjFrame);
+        } else {
+            animationFrame = 0;
+        }
+    }
+
+    function startVjAnimation() {
+        if (reduceMotion.matches) {
+            drawLyricVj();
+            return;
+        }
+
+        if (!animationFrame) {
+            animationFrame = requestAnimationFrame(renderVjFrame);
+        }
+    }
+
+    async function startVisualizer() {
+        if (!window.AudioContext) {
+            console.error("Audio visualization is unavailable because Web Audio is not supported.");
+            return;
+        }
+
+        try {
+            if (!audioContext) {
+                audioContext = new AudioContext();
+                analyser = audioContext.createAnalyser();
+                analyser.fftSize = 256;
+                frequencyData = new Uint8Array(analyser.frequencyBinCount);
+                const source = audioContext.createMediaElementSource(player);
+                source.connect(analyser);
+                analyser.connect(audioContext.destination);
+            }
+
+            await audioContext.resume();
+            if (player.paused) {
+                return;
+            }
+
+            startVjAnimation();
+        } catch (error) {
+            console.error("Unable to start the audio visualizer.", error);
+        }
+    }
+
+    function setPlaying(isPlaying) {
+        albumArt.classList.toggle("is-playing", isPlaying);
+        if (!isPlaying) {
+            if (analyser) {
+                frequencyData.fill(0);
+            }
+            visualizerContext.clearRect(0, 0, visualizer.width, visualizer.height);
+        }
+    }
+
+    function updateLyrics() {
+        let nextIndex = -1;
+        for (let index = 0; index < lyricLines.length; index += 1) {
+            if (player.currentTime < Number(lyricLines[index].dataset.time)) {
+                break;
+            }
+            nextIndex = index;
+        }
 
         if (nextIndex === activeLyricIndex) {
             return;
         }
 
         if (activeLyricIndex >= 0) {
+            beginVjTransition();
             lyricLines[activeLyricIndex].classList.remove("is-active");
+            lyricLines[activeLyricIndex].setAttribute("aria-pressed", "false");
+        }
+
+        if (nextIndex === -1) {
+            activeLyricIndex = -1;
+            return;
         }
 
         const activeLine = lyricLines[nextIndex];
         activeLine.classList.add("is-active");
+        activeLine.setAttribute("aria-pressed", "true");
         lyricsViewport.scrollTo({
             top: activeLine.offsetTop - (lyricsViewport.clientHeight - activeLine.clientHeight) / 2,
             behavior: reduceMotion.matches ? "auto" : "smooth"
         });
         activeLyricIndex = nextIndex;
+        if (reduceMotion.matches && !player.paused && frequencyData) {
+            drawLyricVj();
+        }
     }
 
-    player.addEventListener("play", () => setPlaying(true));
+    lyricLines.forEach((line) => {
+        line.setAttribute("aria-pressed", "false");
+        line.addEventListener("click", async () => {
+            player.currentTime = Number(line.dataset.time);
+            updateLyrics();
+
+            try {
+                await player.play();
+            } catch (error) {
+                console.error("Unable to start playback from the selected lyric.", error);
+            }
+        });
+    });
+
+    resizeVisualizer();
+    drawLyricVj();
+    startVjAnimation();
+    window.addEventListener("resize", resizeVisualizer);
+    player.addEventListener("play", () => {
+        setPlaying(true);
+        startVisualizer();
+    });
     player.addEventListener("pause", () => setPlaying(false));
     player.addEventListener("ended", () => setPlaying(false));
     player.addEventListener("loadedmetadata", updateLyrics);
     player.addEventListener("timeupdate", updateLyrics);
     player.addEventListener("seeked", updateLyrics);
+    reduceMotion.addEventListener("change", () => {
+        if (reduceMotion.matches) {
+            cancelAnimationFrame(animationFrame);
+            animationFrame = 0;
+            drawLyricVj();
+            if (!player.paused && analyser) {
+                drawVisualizer();
+            }
+        } else {
+            startVjAnimation();
+        }
+        if (!player.paused && analyser) {
+            startVisualizer();
+        }
+    });
 </script>
 </body>
 </html>
